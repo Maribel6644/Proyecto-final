@@ -34,7 +34,7 @@ def delete_post(id:int):
 def update_post(id: int, updated_post: Post):
     global posts
 #si el post tiene ese id,reemplázalo.Si no,déjalo igual
-=======
+
 from pydantic import BaseModel
 from fastapi import Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -104,7 +104,7 @@ def update_post(id: int, updated_post: Post):
 
     updated_post.id = id
 
->>>>>>> maribel-dev
+
     posts = [
         updated_post if post.id == id else post
         for post in posts
@@ -123,8 +123,6 @@ def get_imagenes():
         "imagenes": data
     }
 
-    
-=======
 
 # API EXTERNA UNSPLASH
 @app.get("/imagenes")
@@ -151,4 +149,3 @@ def get_imagenes():
         })
 
     return imagenes_transformadas
->>>>>>> maribel-dev
