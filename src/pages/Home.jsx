@@ -5,8 +5,7 @@ import PostForm from "../components/PostForm"
 function Home() {
 
   // URL BACKEND ONLINE
-  const API = "https://pinterest-backend-40kl.onrender.com"
-
+  const API ="https://proyecto-final-b816.onrender.com"
   // POSTS
   const [posts, setPosts] = useState([])
 
@@ -41,7 +40,7 @@ function Home() {
 
     const data = await response.json()
 
-    setImagenes(data.imagenes)
+    setImagenes(data)
 
   }
 
