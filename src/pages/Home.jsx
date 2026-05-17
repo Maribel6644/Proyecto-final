@@ -4,6 +4,9 @@ import PostForm from "../components/PostForm"
 
 function Home() {
 
+  // URL BACKEND ONLINE
+  const API = "https://pinterest-backend-40kl.onrender.com"
+
   // POSTS
   const [posts, setPosts] = useState([])
 
@@ -20,7 +23,7 @@ function Home() {
   async function fetchPosts() {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/posts"
+      `${API}/posts`
     )
 
     const data = await response.json()
@@ -33,12 +36,12 @@ function Home() {
   async function fetchImagenes() {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/imagenes"
+      `${API}/imagenes`
     )
 
     const data = await response.json()
 
-    setImagenes(data)
+    setImagenes(data.imagenes)
 
   }
 
@@ -46,7 +49,7 @@ function Home() {
   async function addPost(newPost) {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/posts",
+      `${API}/posts`,
       {
         method: "POST",
 
@@ -69,7 +72,7 @@ function Home() {
   async function deletePost(id) {
 
     await fetch(
-      `http://127.0.0.1:8000/posts/${id}`,
+      `${API}/posts/${id}`,
       {
         method: "DELETE"
       }
@@ -90,7 +93,7 @@ function Home() {
   async function updatePost(updatedPost) {
 
     const response = await fetch(
-      `http://127.0.0.1:8000/posts/${editingPost.id}`,
+      `${API}/posts/${editingPost.id}`,
       {
         method: "PUT",
 
