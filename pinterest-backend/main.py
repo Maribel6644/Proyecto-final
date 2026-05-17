@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-<<<<<<< HEAD
 from pydantic  import BaseModel
 from fastapi import Header
 import requests
@@ -113,7 +112,6 @@ def update_post(id: int, updated_post: Post):
 
     return updated_post
 
-<<<<<<< HEAD
 @app.get("/imagenes")
 def get_imagenes():
 
