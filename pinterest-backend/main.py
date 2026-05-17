@@ -2,6 +2,13 @@ from fastapi import FastAPI
 from pydantic  import BaseModel
 from fastapi import Header
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+print(ACCESS_KEY)
 app=FastAPI()
 posts=[]
 
@@ -112,16 +119,33 @@ def update_post(id: int, updated_post: Post):
 
     return updated_post
 
+
+    
 @app.get("/imagenes")
 def get_imagenes():
 
-    response = requests.get("URL")
+    headers = {
+        "Authorization": f"Client-ID {ACCESS_KEY}" ,
+         "Accept-Version": "v1"
+    }
+
+    response = requests.get(
+        "https://api.unsplash.com/photos",
+        headers=headers
+    )
 
     data = response.json()
 
-    return {
-        "imagenes": data
-    }
+    imagenes = []
+
+    for img in data:
+        imagenes.append({ 
+            "id": img["id"],
+            "url": img["urls"]["small"],
+            "autor": img["user"]["name"]
+        })
+
+    return imagenes
 
 
 # API EXTERNA UNSPLASH
