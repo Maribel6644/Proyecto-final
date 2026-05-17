@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import Header
@@ -12,6 +13,13 @@ load_dotenv()
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # CORS
 app.add_middleware(
@@ -102,9 +110,9 @@ def get_imagenes():
     for photo in data:
 
         imagenes_transformadas.append({
-            "id": photo["id"],
-            "image": photo["urls"]["regular"],
-            "description": photo["alt_description"]
+             "id": photo["id"],
+             "image": photo["urls"]["regular"],
+             "description": photo["alt_description"] or "Imagen"
         })
 
     return imagenes_transformadas
