@@ -5,15 +5,23 @@ import PostForm from "../components/PostForm"
 function Home() {
 
   // URL BACKEND ONLINE
-  const API ="http://127.0.0.1:8000"
+  const API = "https://proyecto-final-b816.onrender.com"
   // POSTS
   const [posts, setPosts] = useState([])
-
   // IMAGENES
   const [imagenes, setImagenes] = useState([])
 
   // USERNAME
   const [username, setUsername] = useState("")
+  useEffect(() => {
+
+  const savedUser = sessionStorage.getItem("usuario")
+
+  if(savedUser){
+    setUsername(savedUser)
+  }
+
+}, [])
 
   // EDITING POST
   const [editingPost, setEditingPost] = useState(null)
@@ -73,7 +81,10 @@ function Home() {
     await fetch(
       `${API}/posts/${id}`,
       {
-        method: "DELETE"
+        method: "DELETE",
+         headers: {
+      "usuario": username
+    }
       }
     )
 
@@ -166,14 +177,23 @@ function Home() {
         {/* USER INPUT */}
         <div className="mb-4">
 
-          <input
-            type="text"
-            className="form-control"
+         <input
+           type="text"
+           className="form-control"
             placeholder="Your username..."
-            value={username}
-            onChange={(e) =>
+           value={username}
+           onChange={(e) => {
+
               setUsername(e.target.value)
-            }
+
+             sessionStorage.setItem(
+              "usuario",
+              e.target.value
+    )
+
+
+       }}
+
           />
 
         </div>

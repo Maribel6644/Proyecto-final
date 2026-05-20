@@ -100,32 +100,85 @@ def create_post(post: Post, usuario: str = Header(...)):
 
 # DELETE POST
 @app.delete("/posts/{id}")
-def delete_post(id: int):
+    
+def delete_post(id: int, usuario: str = Header(...)):
 
-    global posts
+    # BUSCAR POST
+    cur.execute(
+        "SELECT * FROM posts WHERE id = %s",
+        (id,)
+    )
 
-    posts = [
-        post for post in posts
-        if post.id != id
-    ]
+    post = cur.fetchone()
+
+    # SI NO EXISTE
+    if not post:
+        return {"error": "Post no encontrado"}
+
+    # VALIDAR USUARIO
+    if post["user_name"] != usuario:
+        return {"error": "No puedes borrar este post"}
+
+    # ELIMINAR
+    cur.execute(
+        "DELETE FROM posts WHERE id = %s",
+        (id,)
+    )
+
+    conn.commit()
 
     return {"message": "Post eliminado"}
 
 
 # UPDATE POST
+
+
 @app.put("/posts/{id}")
-def update_post(id: int, updated_post: Post):
+def update_post(
+    id: int,
+    updated_post: Post,
+    usuario: str = Header(...)
+):
 
-    global posts
+    # BUSCAR POST
+    cur.execute(
+        "SELECT * FROM posts WHERE id = %s",
+        (id,)
+    )
 
-    updated_post.id = id
+    post = cur.fetchone()
 
-    posts = [
-        updated_post if post.id == id else post
-        for post in posts
-    ]
+    # VALIDAR EXISTENCIA
+    if not post:
+        return {"error": "Post no encontrado"}
 
-    return updated_post
+    # VALIDAR DUEÑO
+    if post["user_name"] != usuario:
+        return {"error": "No puedes editar este post"}
+
+    # ACTUALIZAR
+    cur.execute(
+        """
+        UPDATE posts
+        SET title = %s,
+            image = %s,
+            tags = %s
+        WHERE id = %s
+        RETURNING *
+        """,
+        (
+            updated_post.title,
+            updated_post.image,
+            updated_post.tags,
+            id
+        )
+    )
+
+    conn.commit()
+
+    edited_post = cur.fetchone()
+
+    return edited_post
 
 
 # API EXTERNA UNSPLASH
