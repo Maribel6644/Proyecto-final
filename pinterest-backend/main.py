@@ -6,11 +6,36 @@ from fastapi.middleware.cors import CORSMiddleware
 import requests
 from dotenv import load_dotenv
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
 
 # CARGAR .ENV
 load_dotenv()
 
 ACCESS_KEY = os.getenv("ACCESS_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+conn = psycopg2.connect(
+    DATABASE_URL,
+    sslmode="require",
+    cursor_factory=RealDictCursor
+)
+
+cur = conn.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    image TEXT,
+    tags TEXT[],
+    user_name TEXT
+)
+""")
+
+conn.commit()
+
+app = FastAPI()
 
 app = FastAPI()
 app.add_middleware(
@@ -30,7 +55,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-posts = []
+
 
 # MODELO
 class Post(BaseModel):
@@ -42,23 +67,35 @@ class Post(BaseModel):
 
 
 # GET POSTS
+
 @app.get("/posts")
 def get_posts():
-    return posts
 
+    cur.execute("SELECT * FROM posts")
+    all_posts = cur.fetchall()
+
+    return all_posts
 
 # CREATE POST
 @app.post("/posts")
 def create_post(post: Post, usuario: str = Header(...)):
 
-    print(usuario)
+    cur.execute(
+        """
+        INSERT INTO posts (title, image, tags, user_name)
+        VALUES (%s, %s, %s, %s)
+        RETURNING *
+        """,
+        (post.title, post.image, post.tags, post.user)
+    )
 
-    # GENERAR ID AUTOMÁTICO
-    post.id = len(posts) + 1
+    new_post = cur.fetchone()
 
-    posts.append(post)
+    conn.commit()
 
-    return post
+    return new_post
+   
+   
 
 
 # DELETE POST
