@@ -5,7 +5,7 @@ import PostForm from "../components/PostForm"
 function Home() {
 
   // URL BACKEND ONLINE
-  const API ="https://proyecto-final-b816.onrender.com"
+  const API ="http://127.0.0.1:8000"
   // POSTS
   const [posts, setPosts] = useState([])
 
