@@ -108,7 +108,8 @@ function Home() {
         method: "PUT",
 
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "usuario": username
         },
 
         body: JSON.stringify(updatedPost)

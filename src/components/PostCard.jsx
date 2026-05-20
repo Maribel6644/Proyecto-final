@@ -1,5 +1,7 @@
 function PostCard({ post, deletePost, editPost }) {
+
   return (
+
     <div className="card pinterest-item">
 
       <img
@@ -14,17 +16,19 @@ function PostCard({ post, deletePost, editPost }) {
 
         <p>
           {post.tags?.map((tag, index) => (
+
             <span
               key={index}
               className="tag"
             >
               #{tag}
             </span>
+
           ))}
         </p>
 
         <small className="text-muted">
-          By {post.user}
+          By {post.user_name || post.user}
         </small>
 
         <div className="mt-3 d-flex gap-2">
@@ -46,7 +50,9 @@ function PostCard({ post, deletePost, editPost }) {
         </div>
 
       </div>
+
     </div>
+
   )
 }
 
