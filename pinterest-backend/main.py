@@ -37,16 +37,7 @@ conn.commit()
 
 app = FastAPI()
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -69,9 +60,22 @@ class Post(BaseModel):
 # GET POSTS
 
 @app.get("/posts")
-def get_posts():
+def get_posts(
+    page: int = 1,
+    limit: int = 5
+):
 
-    cur.execute("SELECT * FROM posts")
+    offset = (page - 1) * limit
+
+    cur.execute(
+        """
+        SELECT * FROM posts
+        ORDER BY id DESC
+        LIMIT %s OFFSET %s
+        """,
+        (limit, offset)
+    )
+
     all_posts = cur.fetchall()
 
     return all_posts
@@ -128,6 +132,23 @@ def delete_post(id: int, usuario: str = Header(...)):
     conn.commit()
 
     return {"message": "Post eliminado"}
+
+@app.get("/posts/{id}")
+def get_post(id: int):
+
+    cur.execute(
+        "SELECT * FROM posts WHERE id = %s",
+        (id,)
+    )
+
+    post = cur.fetchone()
+
+    if not post:
+        return {
+            "error": "Post no encontrado"
+        }
+
+    return post
 
 
 # UPDATE POST
@@ -206,3 +227,41 @@ def get_imagenes():
         })
 
     return imagenes_transformadas
+
+@app.get("/health")
+def health():
+
+    try:
+
+        url = "https://api.unsplash.com/photos/random?count=1"
+
+        headers = {
+            "Authorization": f"Client-ID {ACCESS_KEY}"
+        }
+
+        response = requests.get(
+            url,
+            headers=headers
+        )
+
+        if response.status_code == 200:
+
+            return {
+                "status": "ok",
+                "unsplash": "active",
+                "database": "connected"
+            }
+
+        else:
+
+            return {
+                "status": "warning",
+                "unsplash": "error",
+                "database": "connected"
+            }
+
+    except:
+
+        return {
+            "status": "error"
+        }
