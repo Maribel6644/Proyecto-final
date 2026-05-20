@@ -6,6 +6,7 @@ function Home() {
 
   // URL BACKEND ONLINE
   const API = "https://proyecto-final-b816.onrender.com"
+  const [page, setPage] = useState(1)
   // POSTS
   const [posts, setPosts] = useState([])
   // IMAGENES
@@ -30,7 +31,7 @@ function Home() {
   async function fetchPosts() {
 
     const response = await fetch(
-      `${API}/posts`
+      `${API}/posts?page=${page}&limit=6`
     )
 
     const data = await response.json()
@@ -136,7 +137,7 @@ function Home() {
     fetchPosts()
     fetchImagenes()
 
-  }, [])
+  }, [page])
 
   // RECOVER USER
   useEffect(() => {
@@ -228,6 +229,31 @@ function Home() {
           ))}
 
         </div>
+        <div className="d-flex gap-3 mt-4">
+
+       <button
+        className="btn btn-dark"
+       onClick={() => {
+
+       if (page > 1) {
+         setPage(page - 1)
+       }
+
+      }}
+   >
+    Previous
+  </button>
+
+  <button
+    className="btn btn-dark"
+    onClick={() => {
+      setPage(page + 1)
+    }}
+  >
+    Next
+  </button>
+
+</div>
 
         {/* DISCOVER */}
         <h2 className="discover-title">
